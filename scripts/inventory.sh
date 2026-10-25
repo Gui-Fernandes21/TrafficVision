@@ -29,7 +29,7 @@ main() {
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-OUT_DIR="$SCRIPT_DIR/../inv_output"
+OUT_DIR="$SCRIPT_DIR/../docs/evidence"
 mkdir -p "$OUT_DIR"
 
 main > "$OUT_DIR/inventory-$(date +%F).txt"
