@@ -21,7 +21,10 @@ main() {
 	run "cat /etc/os-release"
 	run "cat /etc/nv_tegra_release"
 	run "gst-inspect-1.0 nvv4l2decoder"
+	run "cat /proc/device-tree/model"
+	run "python3 -c 'import numpy as np; print(np.__version__)'"
+	run "dpkg-query -W python3-numpy"
 }
 
 
-main > ../inv_output/inventory-$(date +%F).txt mkdir -p
+main > ../inv_output/inventory-$(date +%F).txt
