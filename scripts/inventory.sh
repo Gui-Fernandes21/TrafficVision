@@ -21,7 +21,7 @@ main() {
 	run "cat /etc/os-release"
 	run "cat /etc/nv_tegra_release"
 	run "gst-inspect-1.0 nvv4l2decoder"
-	run "tr -d '\000' < /proc/device-tree/model; echo"
+	run "tr -d '\000' < /proc/device-tree/model && echo"
 	run "python3 -c 'import numpy as np; print(np.__version__)'"
 	run "dpkg-query -W nvidia-l4t-core nvidia-jetpack libnvinfer8 libcudnn8 python3-numpy"
 	run "ldd --version | head -1"
