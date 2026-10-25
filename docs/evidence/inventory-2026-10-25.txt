@@ -248,11 +248,19 @@ ldd (Ubuntu GLIBC 2.27-3ubuntu1.4) 2.27
 [exit 0]
 
 === for z in /sys/devices/virtual/thermal/thermal_zone*; do echo "$(cat "$z/type"): $(cat "$z/temp") mC"; done ===
-AO-therm: 32500 mC
-CPU-therm: 25000 mC
+AO-therm: 33000 mC
+CPU-therm: 24000 mC
 GPU-therm: 22000 mC
-PLL-therm: 20000 mC
+PLL-therm: 21500 mC
 PMIC-Die: 50000 mC
-thermal-fan-est: 22500 mC
+thermal-fan-est: 23500 mC
+[exit 0]
+
+=== grep . /sys/block/mmcblk0/device/{type,name,manfid,oemid,date} ===
+/sys/block/mmcblk0/device/type:SD
+/sys/block/mmcblk0/device/name:SC128
+/sys/block/mmcblk0/device/manfid:0x000003
+/sys/block/mmcblk0/device/oemid:0x5344
+/sys/block/mmcblk0/device/date:09/2019
 [exit 0]
 

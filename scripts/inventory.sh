@@ -26,6 +26,7 @@ main() {
 	run "dpkg-query -W nvidia-l4t-core nvidia-jetpack libnvinfer8 libcudnn8 python3-numpy"
 	run "ldd --version | head -1"
 	run 'for z in /sys/devices/virtual/thermal/thermal_zone*; do echo "$(cat "$z/type"): $(cat "$z/temp") mC"; done'
+	run "grep . /sys/block/mmcblk0/device/{type,name,manfid,oemid,date}"
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
