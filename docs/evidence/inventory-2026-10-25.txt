@@ -249,11 +249,11 @@ ldd (Ubuntu GLIBC 2.27-3ubuntu1.4) 2.27
 
 === for z in /sys/devices/virtual/thermal/thermal_zone*; do echo "$(cat "$z/type"): $(cat "$z/temp") mC"; done ===
 AO-therm: 33000 mC
-CPU-therm: 24000 mC
-GPU-therm: 22000 mC
-PLL-therm: 21500 mC
+CPU-therm: 25500 mC
+GPU-therm: 23000 mC
+PLL-therm: 21000 mC
 PMIC-Die: 50000 mC
-thermal-fan-est: 23500 mC
+thermal-fan-est: 24250 mC
 [exit 0]
 
 === grep . /sys/block/mmcblk0/device/{type,name,manfid,oemid,date} ===
@@ -262,5 +262,13 @@ thermal-fan-est: 23500 mC
 /sys/block/mmcblk0/device/manfid:0x000003
 /sys/block/mmcblk0/device/oemid:0x5344
 /sys/block/mmcblk0/device/date:09/2019
+[exit 0]
+
+=== systemctl get-default ===
+graphical.target
+[exit 0]
+
+=== pgrep -l Xorg ===
+5638 Xorg
 [exit 0]
 

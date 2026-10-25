@@ -27,6 +27,8 @@ main() {
 	run "ldd --version | head -1"
 	run 'for z in /sys/devices/virtual/thermal/thermal_zone*; do echo "$(cat "$z/type"): $(cat "$z/temp") mC"; done'
 	run "grep . /sys/block/mmcblk0/device/{type,name,manfid,oemid,date}"
+	run "systemctl get-default"
+	run "pgrep -l Xorg"
 }
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
