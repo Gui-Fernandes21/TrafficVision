@@ -5,6 +5,7 @@
 - **Decider:** Gui Fernandes
 - **Spec references:** §3 (architecture and deployment profiles), §4 (compatibility policy), §12 (acceptance gate 9)
 - **Evidence:** `docs/compatibility.md`
+- **Amended by:** 0003 (the companion runs Python 3.12 instead of 3.11)
 
 ## Context
 

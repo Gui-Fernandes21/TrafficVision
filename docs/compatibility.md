@@ -75,12 +75,21 @@
 | Wi-Fi | Edimax EW-7811Un V2 works | Working | Owner | Reported. Keep the driver and settings unchanged; throughput not measured |
 | SSH | Headless SSH works | Working | Owner | Reported |
 
+## Companion computer
+
+| Item | Spec expectation | Observed | Source | Status |
+|---|---|---|---|---|
+| Operating system | Modern OS; availability unverified | Windows 11 Home, version 26H2 (OS build 26300.9711), native (not WSL2) | `winver` | Confirmed |
+| Python | 3.11 candidate; 3.12 per decision 0003 | 3.12.15, uv-managed build, virtual environment `.venv` at the repository root | `.venv\Scripts\python.exe --version` | Confirmed |
+| Node.js | 22.x | — | `node --version` | Pending until M4 |
+| GPU | Not assumed | — | — | Not required. Companion work is CPU-only |
+
 ## Notes
 
 - `nvcc` is not on the default PATH. Scripts call `/usr/local/cuda/bin/nvcc` directly; don't change the global PATH.
 - Run the inventory with the system interpreter. A virtual environment created without `--system-site-packages` hides `tensorrt`, `cv2` and `numpy`, because all three are installed as system packages, so the same import commands would fail inside it.
 - Exit codes are only a hint. `nvpmodel` exits with code 0 even when it prints errors, and `dpkg-query` exits with code 1 when any one listed package is missing, even though it still reports the others. Read the output.
-- NumPy 1.13.3 is from 2017 and the vendor OpenCV was built against it. Replacing it risks breaking the bindings confirmed above. Shared tracking and counting code is plain Python so it behaves the same under 3.6.9 here and 3.11 on the companion.
+- NumPy 1.13.3 is from 2017 and the vendor OpenCV was built against it. Replacing it risks breaking the bindings confirmed above. Shared tracking and counting code is plain Python so it behaves the same under 3.6.9 here and 3.12 on the companion.
 - Decoded frames from `nvv4l2decoder` live in NVIDIA hardware buffer memory (NVMM), not memory Python can read directly. jetson-utils handles the conversion. A hand-built OpenCV GStreamer pipeline needs `nvvidconv` to copy frames out.
 - Device-tree strings such as `/proc/device-tree/model` end with a NUL byte instead of a newline. Strip it with `tr -d '\000'` so text tools don't treat the output file as binary.
 - The board boots to the desktop. Booting without it (`sudo systemctl set-default multi-user.target`, undone with `graphical.target`) would free memory for the M2 build and for benchmarks. Not done; it's a reversible choice to make before M2.
@@ -99,7 +108,7 @@
 
 ## Carried into M1
 
-- [ ] Companion computer: record its OS and the exact Python 3.11 and Node 22 versions.
+- [x] Companion computer: Windows 11 Home 26H2, Python 3.12.15 (decision 0003). The Node 22 version is recorded in M4.
 
 ## Open assumptions
 
