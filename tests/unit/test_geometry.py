@@ -8,7 +8,7 @@ module_path = os.path.abspath(
 sys.path.append(module_path)
 
 import geometry
-
+import math
 
 class TestGeometry(unittest.TestCase):
 
@@ -33,9 +33,29 @@ class TestGeometry(unittest.TestCase):
         result_swapped = geometry.side([10, 0], [0, 0], [5, 5])
         self.assertEqual(result_swapped, -result)
 
-    def test_signed(self):
+    def test_signed_type(self):
         result = geometry.signed_distance([0, 0], [10, 0], [5, 5])
         self.assertEqual(type(result), float)
+
+    def test_signed_division_by_zero(self):
+        with self.assertRaises(ValueError):
+            result = geometry.signed_distance([10, 0], [10, 0], [5, 5])
+
+    def test_signed_output_1(self):
+        result = geometry.signed_distance([0, 0], [10, 0], [5, 5])
+        self.assertEqual(result, 5.0)
+
+    def test_signed_output_diff_length(self):
+        result = geometry.signed_distance([0, 0], [100, 0], [5, 5])
+        self.assertEqual(result, 5.0)
+
+    def test_signed_output_2(self):
+        result = geometry.signed_distance([0, 0], [10, 10], [10, 0])
+        self.assertAlmostEqual(result, -5*math.sqrt(2))
+
+    def test_segments_return_type(self):
+        result = geometry.segments_intersect([0, 0], [0, 0], [10, 0], [5, 5])
+        self.assertEqual(type(result), bool)
 
 
 if __name__ == "__main__":

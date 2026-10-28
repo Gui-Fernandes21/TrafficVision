@@ -32,7 +32,13 @@ def signed_distance(a: list, b: list, p: list) -> float:
     cross = side(a, b, p)
     ab_dist = math.hypot(b[0] - a[0], b[1] - a[1])
     
-    return 0.0
+    if ab_dist == 0:
+        raise ValueError
+    
+    return cross / ab_dist
 
-def distance(a: list, b: list) -> float:
-    return 0.0
+def segments_intersect(p1, p2, q1, q2) -> bool:
+    
+    
+    
+    return True
