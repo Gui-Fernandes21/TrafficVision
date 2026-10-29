@@ -51,11 +51,31 @@ class TestGeometry(unittest.TestCase):
 
     def test_signed_output_2(self):
         result = geometry.signed_distance([0, 0], [10, 10], [10, 0])
-        self.assertAlmostEqual(result, -5*math.sqrt(2))
+        self.assertAlmostEqual(result, -5 * math.sqrt(2))
+
+    def test_signed_on_line(self):
+        result = geometry.signed_distance([0, 0], [10, 0], [5, 0])
+        self.assertAlmostEqual(result, 0)
+
+    def test_signed_on_line_not_intersect(self):
+        result = geometry.signed_distance([0, 0], [10, 0], [15, 0])
+        self.assertAlmostEqual(result, 0)
 
     def test_segments_return_type(self):
         result = geometry.segments_intersect([0, 0], [0, 0], [10, 0], [5, 5])
         self.assertEqual(type(result), bool)
+
+    def test_segments_clean_intersection(self):
+        result = geometry.segments_intersect([5, -5], [5, 5], [0, 0], [10, 0])
+        self.assertEqual(result, True)
+
+    def test_segments_stop_on_line(self):
+        result = geometry.segments_intersect([5, -5], [5, 0], [0, 0], [10, 0])
+        self.assertEqual(result, True)
+
+    def test_segments_past_intersection(self):
+        result = geometry.segments_intersect([15, -5], [15, 5], [0, 0], [10, 0])
+        self.assertEqual(result, False)
 
 
 if __name__ == "__main__":
