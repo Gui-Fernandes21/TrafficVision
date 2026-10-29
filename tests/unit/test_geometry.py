@@ -10,6 +10,7 @@ sys.path.append(module_path)
 import geometry
 import math
 
+
 class TestGeometry(unittest.TestCase):
 
     def test_side_returns_float(self):
@@ -67,15 +68,31 @@ class TestGeometry(unittest.TestCase):
 
     def test_segments_clean_intersection(self):
         result = geometry.segments_intersect([5, -5], [5, 5], [0, 0], [10, 0])
-        self.assertEqual(result, True)
+        self.assertTrue(result)
 
     def test_segments_stop_on_line(self):
         result = geometry.segments_intersect([5, -5], [5, 0], [0, 0], [10, 0])
-        self.assertEqual(result, True)
+        self.assertTrue(result)
 
     def test_segments_past_intersection(self):
         result = geometry.segments_intersect([15, -5], [15, 5], [0, 0], [10, 0])
-        self.assertEqual(result, False)
+        self.assertFalse(result)
+
+    def test_segments_colinear_not_overlaping(self):
+        result = geometry.segments_intersect([12, 0], [20, 0], [0, 0], [10, 0])
+        self.assertFalse(result)
+
+    def test_segments_colinear_overlaping(self):
+        result = geometry.segments_intersect([5, 0], [15, 0], [0, 0], [10, 0])
+        self.assertTrue(result)
+
+    def test_segments_passes_endpoint(self):
+        result = geometry.segments_intersect([10, -5], [10, 5], [0, 0], [10, 0])
+        self.assertTrue(result)
+
+    def test_segments_zero_on_line(self):
+        result = geometry.segments_intersect([5, 0], [5, 0], [0, 0], [10, 0])
+        self.assertTrue(result)
 
 
 if __name__ == "__main__":

@@ -54,24 +54,33 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
     
     Check whether p1→p2 crosses q1→q2.
     """
-    px, py = p1[:2]
-    qx, qy = q1[:2]
+    p1x, p1y = p1[:2]
+    q1x, q1y = q1[:2]
 
-    rx = p2[0] - px
-    ry = p2[1] - py
-    sx = q2[0] - qx
-    sy = q2[1] - qy
+    # l = line
+    l1x = p2[0] - p1x
+    l1y = p2[1] - p1y
+    l2x = q2[0] - q1x
+    l2y = q2[1] - q1y
 
-    denominator = rx * sy - ry * sx
+    denominator = l1x * l2y - l1y * l2x
 
     if denominator == 0:
-        print('lines are parallel')
-        return False
+        result = check_overlap(p1,p2,q1,q2)
+        return result
 
-    dx = qx - px
-    dy = qy - py
+    # vector from p1 to q1
+    dx = q1x - p1x
+    dy = q1y - p1y
 
-    t = (dx * sy - dy * sx) / denominator
-    u = (dx * ry - dy * rx) / denominator
-
+    # t	- Position of the intersection along the car’s movement
+    # u - Position of the intersection along the crossing line
+    t = (dx * l2y - dy * l2x) / denominator
+    u = (dx * l1y - dy * l1x) / denominator
     return 0 <= t <= 1 and 0 <= u <= 1
+
+
+def check_overlap(p1: list, p2: list, q1: list, q2: list) -> bool:
+    """Assuming colinear, check if lines overlap"""
+    return max(min(p1[0], p2[0]), min(q1[0], q2[0])) <= min(max(p1[0], p2[0]), max(q1[0], q2[0])) and max(
+        min(p1[1], p2[1]), min(q1[1], q2[1])) <= min(max(p1[1], p2[1]), max(q1[1], q2[1]))
