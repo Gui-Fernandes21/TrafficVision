@@ -3,15 +3,15 @@ import math
 def side(a: list, b: list, p: list) -> float:
     """
     INPUT:
-      - vector a: list [x, y]
-      - vector b: list [x, y]
-      - vector p: list [x, y]
+      - point a: list [x, y]
+      - point b: list [x, y]
+      - point p: list [x, y]
 
     Returns the 2D cross product of the vector from a to b and the vector from a to p.
 
     Output meaning:
         1. Positive means to the right of a→b on screen, because y points down.
-        2. 0 means it's touching and collinear overlap count as intersecting
+        2. 0 means that p lies on the infinite line though 'a' and 'b' and possibily beyond its ends. 
     """
 
     ab = [0, 0]
@@ -23,6 +23,7 @@ def side(a: list, b: list, p: list) -> float:
     ap[0] = p[0] - a[0]
     ap[1] = p[1] - a[1]
 
+
     result = (ab[0] * ap[1]) - (ab[1] * ap[0])
 
     return float(result)
@@ -33,14 +34,13 @@ def signed_distance(a: list, b: list, p: list) -> float:
     
     Output meaning:
         1. Positive means to the right of a→b on screen, because y points down.
-        2. 0 means it's touching the line
     """
 
     cross = side(a, b, p)
     ab_dist = math.hypot(b[0] - a[0], b[1] - a[1])
 
     if ab_dist == 0:
-        raise ValueError
+        raise ValueError('ab needs to be a real line with length')
 
     return cross / ab_dist
 
@@ -54,11 +54,12 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
 
     q1 and q2 must be a real line not a single point
 
-    Collinear overlap count as intersecting
+    Denominator being 0 means it's touching the line collinear overlap count as intersecting.
+    Touching an endpoint also counts as a intersection not just collinear overlap.
     """
 
     if q1[0] == q2[0] and q1[1] == q2[1]:
-        raise ValueError
+        raise ValueError("q1 and q2 must be a real line not a single point")
 
     p1x, p1y = p1[:2]
     q1x, q1y = q1[:2]

@@ -1,7 +1,5 @@
 import unittest
 import math
-import sys
-import os
 
 from vision_core import geometry
 
@@ -24,7 +22,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(result, float(0))
 
     def test_side_vertical_case(self):
-        result = geometry.side([0, 0], [10, 0], [-5, 5])
+        result = geometry.side([0, 0], [0, 10], [-5, 5])
         self.assertEqual(result, float(50))
 
     def test_side_correct_swap(self):
