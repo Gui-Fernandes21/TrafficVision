@@ -1,15 +1,5 @@
 import math
 
-def cross_product_3d(a: list, b: list) -> list:
-    """Calculates the cross product of two 3D vectors."""
-    c = [
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0],
-    ]
-    return c
-
-
 def side(a: list, b: list, p: list) -> float:
     """
     INPUT: 
@@ -53,7 +43,12 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
     q1 and q2 are the points of the crossing line.
     
     Check whether p1→p2 crosses q1→q2.
+    
+    q1 and q2 must be a real line not a single point
     """
+    if q1 == q2: 
+        raise ValueError
+    
     p1x, p1y = p1[:2]
     q1x, q1y = q1[:2]
 
@@ -65,9 +60,16 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
 
     denominator = l1x * l2y - l1y * l2x
 
+    
     if denominator == 0:
-        result = check_overlap(p1,p2,q1,q2)
-        return result
+        p1_side = side(q1, q2, p1)
+        p2_side = side(q1, q2, p2)
+        
+        if p1_side == 0 and p2_side == 0:
+            result = check_overlap(p1,p2,q1,q2)
+            return result
+        
+        return False
 
     # vector from p1 to q1
     dx = q1x - p1x

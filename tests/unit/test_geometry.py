@@ -2,12 +2,13 @@ import unittest
 import sys
 import os
 
-module_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "packages", "vision_core")
-)
-sys.path.append(module_path)
+# module_path = os.path.abspath(
+#     os.path.join(os.path.dirname(__file__), "..", "..", "packages", "vision_core")
+# )
+# sys.path.append(module_path)
 
-import geometry
+from vision_core import geometry
+
 import math
 
 
@@ -15,7 +16,7 @@ class TestGeometry(unittest.TestCase):
 
     def test_side_returns_float(self):
         result = geometry.side([0, 0], [10, 0], [5, 5])
-        self.assertEqual(type(result), float)
+        self.assertIsInstance(result, float)
 
     def test_side_correct_positive(self):
         result = geometry.side([0, 0], [10, 0], [5, 5])
@@ -36,7 +37,7 @@ class TestGeometry(unittest.TestCase):
 
     def test_signed_type(self):
         result = geometry.signed_distance([0, 0], [10, 0], [5, 5])
-        self.assertEqual(type(result), float)
+        self.assertIsInstance(result, float)
 
     def test_signed_division_by_zero(self):
         with self.assertRaises(ValueError):
@@ -64,7 +65,7 @@ class TestGeometry(unittest.TestCase):
 
     def test_segments_return_type(self):
         result = geometry.segments_intersect([0, 0], [0, 0], [10, 0], [5, 5])
-        self.assertEqual(type(result), bool)
+        self.assertIsInstance(result, bool)
 
     def test_segments_clean_intersection(self):
         result = geometry.segments_intersect([5, -5], [5, 5], [0, 0], [10, 0])
@@ -93,6 +94,18 @@ class TestGeometry(unittest.TestCase):
     def test_segments_zero_on_line(self):
         result = geometry.segments_intersect([5, 0], [5, 0], [0, 0], [10, 0])
         self.assertTrue(result)
+
+    def test_segments_non_overlap_horizontal_line(self):
+        result = geometry.segments_intersect([0, 1], [10, 11], [0, 0], [10, 10])
+        self.assertFalse(result)
+
+    def test_segments_horizontal_line_not_touch(self):
+        result = geometry.segments_intersect([5, 1], [5, 1], [0, 0], [10, 10])
+        self.assertFalse(result)                                              
+
+    def test_segments_horizontal_line_not_touch_swapped(self):
+        with self.assertRaises(ValueError):
+            result = geometry.segments_intersect([0, 0], [10, 10], [5, 1], [5, 1])
 
 
 if __name__ == "__main__":
