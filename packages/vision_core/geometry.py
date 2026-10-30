@@ -2,14 +2,18 @@ import math
 
 def side(a: list, b: list, p: list) -> float:
     """
-    INPUT: 
+    INPUT:
       - vector a: list [x, y]
       - vector b: list [x, y]
       - vector p: list [x, y]
-    
+
     Returns the 2D cross product of the vector from a to b and the vector from a to p.
+
+    Output meaning:
+        1. Positive means to the right of a→b on screen, because y points down.
+        2. 0 means it's touching and collinear overlap count as intersecting
     """
-    
+
     ab = [0, 0]
     ap = [0, 0]
 
@@ -26,6 +30,10 @@ def side(a: list, b: list, p: list) -> float:
 def signed_distance(a: list, b: list, p: list) -> float:
     """
     This returns side(a, b, p) divided by the length of a→b
+    
+    Output meaning:
+        1. Positive means to the right of a→b on screen, because y points down.
+        2. 0 means it's touching the line
     """
 
     cross = side(a, b, p)
@@ -39,16 +47,19 @@ def signed_distance(a: list, b: list, p: list) -> float:
 
 def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
     """
-    p1 and p2 are the vectors of the position of a car between two frames
+    p1 and p2 are the points of the position of a car between two frames
     q1 and q2 are the points of the crossing line.
-    
+
     Check whether p1→p2 crosses q1→q2.
-    
+
     q1 and q2 must be a real line not a single point
+
+    Collinear overlap count as intersecting
     """
-    if q1 == q2: 
+
+    if q1[0] == q2[0] and q1[1] == q2[1]:
         raise ValueError
-    
+
     p1x, p1y = p1[:2]
     q1x, q1y = q1[:2]
 
@@ -60,15 +71,14 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
 
     denominator = l1x * l2y - l1y * l2x
 
-    
     if denominator == 0:
         p1_side = side(q1, q2, p1)
         p2_side = side(q1, q2, p2)
-        
+
         if p1_side == 0 and p2_side == 0:
-            result = check_overlap(p1,p2,q1,q2)
+            result = _check_overlap(p1, p2, q1, q2)
             return result
-        
+
         return False
 
     # vector from p1 to q1
@@ -82,7 +92,7 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
     return 0 <= t <= 1 and 0 <= u <= 1
 
 
-def check_overlap(p1: list, p2: list, q1: list, q2: list) -> bool:
+def _check_overlap(p1: list, p2: list, q1: list, q2: list) -> bool:
     """Assuming colinear, check if lines overlap"""
     return max(min(p1[0], p2[0]), min(q1[0], q2[0])) <= min(max(p1[0], p2[0]), max(q1[0], q2[0])) and max(
         min(p1[1], p2[1]), min(q1[1], q2[1])) <= min(max(p1[1], p2[1]), max(q1[1], q2[1]))
