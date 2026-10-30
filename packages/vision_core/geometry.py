@@ -23,7 +23,6 @@ def side(a: list, b: list, p: list) -> float:
     ap[0] = p[0] - a[0]
     ap[1] = p[1] - a[1]
 
-
     result = (ab[0] * ap[1]) - (ab[1] * ap[0])
 
     return float(result)
@@ -54,8 +53,10 @@ def segments_intersect(p1: list, p2: list, q1: list, q2: list) -> bool:
 
     q1 and q2 must be a real line not a single point
 
-    Denominator being 0 means it's touching the line collinear overlap count as intersecting.
-    Touching an endpoint also counts as a intersection not just collinear overlap.
+    Output meanings:
+        1. Denominator being 0 means the segments are parallel.
+        2. Collinear overlap count as intersecting.
+        3. Touching an endpoint also counts as a intersecting.
     """
 
     if q1[0] == q2[0] and q1[1] == q2[1]:
