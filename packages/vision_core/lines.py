@@ -45,7 +45,10 @@ def validate_line(line: dict) -> None:
     if type(line["deadband_px"]) is not int or line["deadband_px"] < 0:
         raise ValueError("deadband_px is negative or not a number")
 
-    if (line["positive_label"] not in allowed_labels or line["negative_label"] not in allowed_labels):
+    if (
+        line["positive_label"] not in ALLOWED_LABELS
+        or line["negative_label"] not in ALLOWED_LABELS
+    ):
         raise ValueError("Label unsupported")
 
     if line["positive_label"] == line["negative_label"]:
