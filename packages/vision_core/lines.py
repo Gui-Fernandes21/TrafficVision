@@ -2,7 +2,7 @@ from enum import Enum
 import math
 
 
-class labels(Enum):
+class Labels(Enum):
     IN = "in"
     OUT = "out"
 
