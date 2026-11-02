@@ -53,12 +53,24 @@ class TestLines(unittest.TestCase):
             }
             output = lines.validate_line(input_line)
 
+    def test_validate_lines_valid(self):
+        input_line = {
+            "id": "someid",
+            "a": [0.1, 0.2],
+            "b": [0.1, 1],
+            "positive_label": "in",
+            "negative_label": "out",
+            "deadband_px": 5,
+        }
+        output = lines.validate_line(input_line)
+        self.assertEqual(output, None)
+
     def test_validate_lines_list_type(self):
         with self.assertRaises(ValueError):
             input_line = {
                 "id": "someid",
                 "a": [0.1, 0.2],
-                "b": [0.1, 1],
+                "b": [0.1, True],
                 "positive_label": "in",
                 "negative_label": "out",
                 "deadband_px": 5,
@@ -113,6 +125,24 @@ class TestLines(unittest.TestCase):
             }
             output = lines.validate_line(input_line)
 
+    def test_validate_deadband_type_float(self):
+        input_line_int = {
+            "id": "someid",
+            "a": [0.1, 0.2],
+            "b": [0.1, 0.34],
+            "positive_label": "in",
+            "negative_label": "out",
+            "deadband_px": 5,
+        }
+        input_line_float = input_line_int
+        input_line_float["deadband_px"] = 2.5
+
+        output_int = lines.validate_line(input_line_int)
+        output_float = lines.validate_line(input_line_float)
+
+        self.assertEqual(output_int, None)
+        self.assertEqual(output_float, None)
+
     def test_validate_deadband_range(self):
         with self.assertRaises(ValueError):
             input_line = {
@@ -125,13 +155,25 @@ class TestLines(unittest.TestCase):
             }
             output = lines.validate_line(input_line)
 
-    def test_validate_line_not_supported_labels(self):
+    def test_validate_line_label_type(self):
         with self.assertRaises(ValueError):
             input_line = {
                 "id": "someid",
                 "a": [0.1, 0.2],
                 "b": [0.5, 0.9],
-                "positive_label": "out",
+                "positive_label": 1,
+                "negative_label": "ontop",
+                "deadband_px": 5,
+            }
+            output = lines.validate_line(input_line)
+
+    def test_validate_line_label_empty(self):
+        with self.assertRaises(ValueError):
+            input_line = {
+                "id": "someid",
+                "a": [0.1, 0.2],
+                "b": [0.5, 0.9],
+                "positive_label": "",
                 "negative_label": "ontop",
                 "deadband_px": 5,
             }
@@ -149,6 +191,54 @@ class TestLines(unittest.TestCase):
             }
             output = lines.validate_line(input_line)
 
+    def test_validate_lines_same_ids(self):
+        with self.assertRaises(ValueError):
+            input_line1 = {
+                "id": "someid",
+                "a": [0.1, 0.2],
+                "b": [0.5, 0.9],
+                "positive_label": "in",
+                "negative_label": "in",
+                "deadband_px": 5,
+            }
+            input_line2 = {
+                "id": "someid",
+                "a": [0.1, 0.2],
+                "b": [0.5, 0.9],
+                "positive_label": "in",
+                "negative_label": "in",
+                "deadband_px": 5,
+            }
+            output = lines.validate_lines([input_line1, input_line2])
+
+    def test_validate_lines_empty(self):
+        with self.assertRaises(ValueError):
+            output = lines.validate_lines([])
+
+    def test_validate_lines_undefined(self):
+        with self.assertRaises(ValueError):
+            output = lines.validate_lines([])
+
+    def test_validate_lines_type(self):
+        with self.assertRaises(ValueError):
+            input_line1 = {
+                "id": "someid",
+                "a": [0.1, 0.2],
+                "b": [0.5, 0.9],
+                "positive_label": "in",
+                "negative_label": "in",
+                "deadband_px": 5,
+            }
+            input_line2 = {
+                "id": "someid",
+                "a": [0.1, 0.2],
+                "b": [0.5, 0.9],
+                "positive_label": "in",
+                "negative_label": "in",
+                "deadband_px": 5,
+            }
+            output = lines.validate_lines((input_line1, input_line2))
+
     def test_pixels_return(self):
         output = lines.to_pixels([0.1, 0.6], WIDTH, HEIGHT)
         self.assertIsInstance(output, list)
@@ -157,9 +247,17 @@ class TestLines(unittest.TestCase):
         with self.assertRaises(ValueError):
             output = lines.to_pixels([0.1, 0.6], -WIDTH, HEIGHT)
 
+    def test_pixels_zero_width(self):
+        with self.assertRaises(ValueError):
+            lines.to_pixels([0.5, 0.5], 0, HEIGHT)
+
+    def test_pixels_zero_height(self):
+        with self.assertRaises(ValueError):
+            lines.to_pixels([0.5, 0.5], WIDTH, 0)
+
     def test_pixels_correct_computation(self):
         output1 = lines.to_pixels([0.1, 0.6], WIDTH, HEIGHT)
-        output2 = lines.to_pixels([0.0, 0.0], 0, 0)
+        output2 = lines.to_pixels([0.0, 0.0], WIDTH, HEIGHT)
         output3 = lines.to_pixels([1, 1], WIDTH, HEIGHT)
 
         self.assertEqual(output1, [192.0, 648.0])
