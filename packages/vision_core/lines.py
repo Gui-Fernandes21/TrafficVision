@@ -17,6 +17,8 @@ def validate_line(line: dict) -> None:
         "deadband_px",
     ]
 
+    ALLOWED_LABELS = {label.value for label in Labels}
+
     for i, att in enumerate(line_attributes):
         contain = line.__contains__(line_attributes[i])
 
@@ -43,7 +45,7 @@ def validate_line(line: dict) -> None:
     if type(line["deadband_px"]) is not int or line["deadband_px"] < 0:
         raise ValueError("deadband_px is negative or not a number")
 
-    if line["positive_label"] not in labels or line["negative_label"] not in labels:
+    if (line["positive_label"] not in allowed_labels or line["negative_label"] not in allowed_labels):
         raise ValueError("Label unsupported")
 
     if line["positive_label"] == line["negative_label"]:
