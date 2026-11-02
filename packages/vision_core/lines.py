@@ -32,7 +32,20 @@ def validate_line(line: dict) -> None | ValueError:
     if not all(isinstance(coord, float) for coord in point_a + point_b):
         raise ValueError("coordinates need to be all floats")
 
-    return
+    if not all(coord >= 0.0 and coord <= 1.0 for coord in point_a+point_b):
+        raise ValueError("coordinates need to be in range 0 to 1")
+
+    if point_a == point_b:
+        raise ValueError("The line has zero length")
+
+    if type(line["deadband_px"]) is not int or line['deadband_px'] < 0:
+        raise ValueError("deadband_px is negative or not a number")
+
+    if line["positive_label"] not in labels or line["negative_label"] not in labels:
+        raise ValueError('Label unsupported')
+
+    if line["positive_label"] == line["negative_label"]:
+        raise ValueError("Labels cannot be the same")
 
 
 def to_pixels(point: list, width: float, height: float):
