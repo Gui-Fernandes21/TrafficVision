@@ -50,7 +50,7 @@ def validate_line(line: dict) -> None:
         raise ValueError("Labels cannot be the same")
 
 
-def validate_lines(lines: list[dict]) -> None:
+def validate_lines(lines: [dict]) -> None:
     unique_ids = {line["id"] for line in lines}
 
     if len(unique_ids) != len(lines):
