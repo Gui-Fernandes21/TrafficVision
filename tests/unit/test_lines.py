@@ -47,6 +47,12 @@ class TestLines(unittest.TestCase):
             input_line['a'] = [0.1, 0.2, 0.2]
             output = lines.validate_line(input_line)
 
+    def test_validate_line_not_list(self):
+        with self.assertRaises(ValueError):
+            input_line = valid_line()
+            input_line["a"] = 5
+            output = lines.validate_line(input_line)
+
     def test_validate_line_valid_int(self):
         input_line = valid_line()
         input_line['b'] = [0.1, 1]

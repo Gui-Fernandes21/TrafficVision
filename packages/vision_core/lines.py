@@ -27,10 +27,8 @@ def validate_line(line: dict) -> None:
         "deadband_px",
     ]
 
-    for i, att in enumerate(line_attributes):
-        contain = line.__contains__(line_attributes[i])
-
-        if not contain:
+    for att in line_attributes:
+        if not att in line:
             raise ValueError(f"Missing Key {att}")
 
     if line["id"] == "" or not isinstance(line["id"], str):
@@ -83,7 +81,7 @@ def validate_lines(lines: list) -> None:
 
 def to_pixels(point: list, width: float, height: float) -> list:
     """
-    transforms the point's coordinate from a percentage to pixel values depending on the width and height
+    transforms the point's coordinate from a fraction of 0-1 to a pixel values depending on the width and height
     """
     if width <= 0 or height <= 0:
         raise ValueError("width and height must be positive, got {} x {}".format(width, height))
