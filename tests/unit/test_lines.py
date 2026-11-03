@@ -29,7 +29,7 @@ class TestLines(unittest.TestCase):
       lines.validate_line(input_line)
 
   def test_validate_line_not_dictionary(self):
-    with self.assertRaises(ValueError):
+    with self.assertRaises(TypeError):
       input_line = valid_line()
       lines.validate_line([*input_line])
 
@@ -46,7 +46,7 @@ class TestLines(unittest.TestCase):
       lines.validate_line(input_line)
 
   def test_validate_line_not_list(self):
-    with self.assertRaises(ValueError):
+    with self.assertRaises(TypeError):
       input_line = valid_line()
       input_line["a"] = 5
       lines.validate_line(input_line)
@@ -107,7 +107,7 @@ class TestLines(unittest.TestCase):
       lines.validate_line(input_line)
 
   def test_validate_line_label_type(self):
-    with self.assertRaises(ValueError):
+    with self.assertRaises(TypeError):
       input_line = valid_line()
       input_line["positive_label"] = 1
       lines.validate_line(input_line)
