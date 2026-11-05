@@ -2,7 +2,7 @@ import unittest
 
 from vision_core import counter
 
-WIDTH, HEIGHT = 1920, 1080
+WIDTH, HEIGHT = 100, 100
 
 
 def _valid_line():
@@ -25,6 +25,7 @@ class TestCounter(unittest.TestCase):
     with self.assertRaises(ValueError):
       counter.LineCounter(_valid_line(), WIDTH, HEIGHT, "500")
 
+  
 
 if __name__ == "__main__":
   unittest.main()
