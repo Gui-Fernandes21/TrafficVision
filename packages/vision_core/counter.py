@@ -1,3 +1,5 @@
+import typing
+
 from vision_core import geometry, lines
 
 
@@ -20,7 +22,7 @@ class LineCounter:
     self._tracks = {}  # track_id -> {"side": ..., "point": ..., "last_seen_ms": ...}
     self._counted = set()  # track_ids already counted on this line
 
-  def update(self, track_id: int, point: list, media_time_ms: int) -> None | dict:
+  def update(self, track_id: int, point: list, media_time_ms: int) -> typing.Optional[dict]: # noqa
     """
     Checks if time gap exceeds and resets the _tracks[track_id].
 
