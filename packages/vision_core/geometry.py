@@ -103,3 +103,5 @@ def _check_overlap(p1: list, p2: list, q1: list, q2: list) -> bool:
   ) and max(min(p1[1], p2[1]), min(q1[1], q2[1])) <= min(
     max(p1[1], p2[1]), max(q1[1], q2[1])
   )
+
+     

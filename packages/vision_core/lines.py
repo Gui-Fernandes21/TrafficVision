@@ -11,7 +11,6 @@ Example of a valid line:
 
 """
 
-
 def validate_line(line: dict) -> None:
   """
   This function validates the structure of the line dictionary and all the required fields in it as well as their types and formats.
