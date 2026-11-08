@@ -20,7 +20,7 @@ class LineCounter:
     self._tracks = {}  # track_id -> {"side": ..., "point": ..., "last_seen_ms": ...}
     self._counted = set()  # track_ids already counted on this line
 
-  def update(self, track_id: str | int, point: list, media_time_ms: int) -> None | dict:
+  def update(self, track_id: int, point: list, media_time_ms: int) -> None | dict:
     """
     Checks if time gap exceeds and resets the _tracks[track_id].
 
@@ -124,7 +124,7 @@ class LineCounter:
     del self._tracks[track_id]
     self._counted.discard(track_id)
 
-  def _compute_label(self, dist: float, curr_label: str | None = None) -> str:
+  def _compute_label(self, dist: float) -> str:
     label = None
 
     if dist < -self.deadband_px:
