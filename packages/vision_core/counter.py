@@ -102,15 +102,15 @@ class LineCounter:
     self._set_track(track_id, direction, point, media_time_ms)
         
   def forget(self, track_id: int) -> None:
+    if type(track_id) != int:
+      raise TypeError('`track_id` needs to be an integer')
+    
     if track_id < 0:
       raise ValueError("input a valid `track_id`!")
     
     if track_id not in self._tracks:
       raise ValueError('`track_id` does not exist')
 
-    if type(track_id) != int:
-      raise TypeError('`track_id` needs to be an integer')
-    
     self._tracks.pop(track_id, None)
     self._counted.discard(track_id)
 

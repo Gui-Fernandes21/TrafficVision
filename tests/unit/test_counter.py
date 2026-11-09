@@ -356,6 +356,27 @@ class TestCounter(unittest.TestCase):
       count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
       count.forget(7)
 
+  def test_track_id_not_seen(self):
+    line = _valid_line()
+    count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
+    
+    observations = [
+      {"track_id": 7, "point": [50, 20], "media_time_ms": 0},
+      {"track_id": 57, "point": [50,70], "media_time_ms": 100},
+    ]
+    
+    counts = []
+
+    for obs in observations:
+      res = count.update(obs["track_id"], obs["point"], obs["media_time_ms"])
+      if res:
+        counts.append(res)
+        
+    self.assertEqual(len(count._tracks), 2)
+    count.forget(57)
+    self.assertEqual(len(count._tracks), 1)
+
+
   def test_max_ms_not_empty(self):
     with self.assertRaises(ValueError):      
       line = _valid_line()
