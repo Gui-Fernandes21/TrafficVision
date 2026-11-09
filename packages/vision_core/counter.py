@@ -14,7 +14,7 @@ class LineCounter:
     self.negative_label = line["negative_label"]
     self.deadband_px = line["deadband_px"]
 
-    if not type(max_gap_ms) in (int, float) or max_gap_ms < 0:
+    if not type(max_gap_ms) in (int, float) or max_gap_ms <= 0:
       raise ValueError("`max_gap_ms` must be an int or float, not a bool, and positive")
 
     self.max_gap_ms = max_gap_ms
@@ -48,15 +48,16 @@ class LineCounter:
 
     track = self._tracks.get(track_id)
     dist = geometry.signed_distance(self.a_px, self.b_px, point)
+    is_outside_band = (dist > self.deadband_px or dist < -self.deadband_px)
     
     # -------------------------------------------------------------------------
     # If NEW track, just create one and return None
     # -------------------------------------------------------------------------
-    if track is None:
-      label = self._compute_label(dist)
+    direction = self._compute_label(dist)
 
+    if track is None:
       self._tracks[track_id] = {
-        "side": label,
+        "side": direction,
         "last_seen_point": point,
         "last_seen_ms": media_time_ms,
       }
@@ -68,27 +69,27 @@ class LineCounter:
     time_gap = media_time_ms - track["last_seen_ms"]
     
     if time_gap > self.max_gap_ms:
-      self.forget(track_id=track_id)
-      label = self._compute_label(dist)
-
+      del self._tracks[track_id]
+      
       self._tracks[track_id] = {
-        "side": label,
+        "side": direction,
         "last_seen_point": point,
         "last_seen_ms": media_time_ms,
       }
       return
-    
-    # update last seen after check
-    track['last_seen_ms'] = media_time_ms
+
+    # -------------------------------------------------------------------------
+    # only update ms INSIDE of the deadband
+    # -------------------------------------------------------------------------
+    if not is_outside_band:
+      track['last_seen_ms'] = media_time_ms
+      return 
     
     # -------------------------------------------------------------------------
     # check for collision and track is outside of the deadband
     # -------------------------------------------------------------------------
-    intersect = geometry.segments_intersect(point, track["last_seen_point"], self.a_px, self.b_px)
-
-    if intersect and (dist > self.deadband_px or dist < -self.deadband_px):
-      direction = self._compute_label(dist)
-
+    print(track['side'],track['last_seen_point'], dist)
+    if is_outside_band:
       # If there's no side, that means that the track was 'born' inside the deadband
       if track["side"] == None:
         self._tracks[track_id] = {
@@ -101,24 +102,31 @@ class LineCounter:
       # Check if the side has changed since the last stable side
       # Check if track has not already been counted for this line
       if track['side'] != direction and track_id not in self._counted:
-        self._tracks[track_id] = {
-          "side": direction,
-          "last_seen_point": point,
-          "last_seen_ms": media_time_ms,
-        }
-
-        self._counted.add(track_id)
+        intersect = geometry.segments_intersect(point, track["last_seen_point"], self.a_px, self.b_px)
         
-        return {
-          "track_id": track_id,
-          "line_id": self.line_id,
-          "direction": direction,
-          "media_time_ms": media_time_ms,
-        }
+        if intersect:
+          self._counted.add(track_id) 
+          self._tracks[track_id] = { 
+            "side": direction, 
+            "last_seen_point": point,  
+            "last_seen_ms": media_time_ms, 
+          }
+          
+          return {
+            "track_id": track_id, 
+            "line_id": self.line_id, 
+            "direction": direction, 
+            "media_time_ms": media_time_ms,
+          }
+    track['side'] = direction
+    track['last_seen_point'] = point
         
   def forget(self, track_id: int) -> None:
-    if not track_id:
-      raise ValueError("`track_id` cannot be empty!")
+    if track_id < 0:
+      raise ValueError("input a valid `track_id`!")
+    
+    if track_id > len(self._tracks):
+      raise ValueError('Out of Range `track_id`')
 
     if type(track_id) != int:
       raise TypeError('`track_id` needs to be an integer')

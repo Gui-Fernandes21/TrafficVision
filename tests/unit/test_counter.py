@@ -285,6 +285,83 @@ class TestCounter(unittest.TestCase):
     self.assertEqual(counts[1].get("direction"), "out")
     self.assertEqual(counts[1].get("media_time_ms"), 300)
 
+  def test_around_end(self):
+    line = _valid_line()
+
+    observations = [
+      {"track_id": 1, "point": [50, 20], "media_time_ms": 0},
+      {"track_id": 1, "point": [95, 20], "media_time_ms": 100},
+      {"track_id": 1, "point": [95, 80], "media_time_ms": 200},
+      {"track_id": 1, "point": [50, 80], "media_time_ms": 300},
+    ]
+
+    count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
+    counts = []
+
+    for obs in observations:
+      res = count.update(obs["track_id"], obs["point"], obs["media_time_ms"])
+      if res:
+        counts.append(res)
+
+    self.assertEqual(len(counts), 0)
+
+  def test_counted_u_turn(self):
+    line = _valid_line()
+
+    observations = [
+      {"track_id": 1, "point": [50, 20], "media_time_ms": 0},
+      {"track_id": 1, "point": [95,20], "media_time_ms": 100},
+      {"track_id": 1, "point": [95,80], "media_time_ms": 200},
+      {"track_id": 1, "point": [50,80], "media_time_ms": 300},
+      {"track_id": 1, "point": [50,30], "media_time_ms": 400},
+    ]
+
+    count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
+    counts = []
+
+    for obs in observations:
+      res = count.update(obs["track_id"], obs["point"], obs["media_time_ms"])
+      if res:
+        counts.append(res)
+
+    self.assertEqual(len(counts), 1)
+    self.assertEqual(counts[0].get("direction"), "out")
+    self.assertEqual(counts[0].get("media_time_ms"), 400)
+    
+  def test_track_id_0(self):
+    line = _valid_line()
+
+    observations = [
+      {"track_id": 0, "point": [50, 20], "media_time_ms": 0},
+      {"track_id": 0, "point": [50,70], "media_time_ms": 100},
+    ]
+
+    count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
+    counts = []
+
+    for obs in observations:
+      res = count.update(obs["track_id"], obs["point"], obs["media_time_ms"])
+      if res:
+        counts.append(res)
+
+    count.forget(0)
+    
+    self.assertEqual(len(counts), 1)
+    self.assertEqual(counts[0].get("direction"), "in")
+    self.assertEqual(counts[0].get("media_time_ms"), 100)
+    
+  def test_track_id_not_available(self):
+    with self.assertRaises(ValueError):      
+      line = _valid_line()
+      count = counter.LineCounter(line, WIDTH, HEIGHT, 1000)
+      count.forget(7)
+
+  def test_max_ms_not_empty(self):
+    with self.assertRaises(ValueError):      
+      line = _valid_line()
+      counter.LineCounter(line, WIDTH, HEIGHT, 0)
+    
+
 
 if __name__ == "__main__":
   unittest.main()
