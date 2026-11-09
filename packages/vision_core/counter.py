@@ -77,41 +77,41 @@ class LineCounter:
       return 
     
     # -------------------------------------------------------------------------
-    # check for collision and track is outside of the deadband
+    # if track is outside of the deadband
     # -------------------------------------------------------------------------
-    if is_outside_band:
-      # If there's no side, that means that the track was 'born' inside the deadband
-      if track["side"] is None:
-        return self._set_track(track_id, direction, point, media_time_ms)
+    # If there's no side, that means that the track was 'born' inside the deadband
+    if track["side"] is None:
+      self._set_track(track_id, direction, point, media_time_ms)
+      return
+    
+    # Check if the side has changed since the last stable side
+    # Check if track has not already been counted for this line
+    if track['side'] != direction and track_id not in self._counted:
+      intersect = geometry.segments_intersect(point, track["last_seen_point"], self.a_px, self.b_px)
       
-      # Check if the side has changed since the last stable side
-      # Check if track has not already been counted for this line
-      if track['side'] != direction and track_id not in self._counted:
-        intersect = geometry.segments_intersect(point, track["last_seen_point"], self.a_px, self.b_px)
+      if intersect:
+        self._counted.add(track_id) 
+        self._set_track(track_id, direction, point, media_time_ms)
         
-        if intersect:
-          self._counted.add(track_id) 
-          self._set_track(track_id, direction, point, media_time_ms)
-          
-          return {
-            "track_id": track_id, 
-            "line_id": self.line_id, 
-            "direction": direction, 
-            "media_time_ms": media_time_ms,
-          }
+        return {
+          "track_id": track_id, 
+          "line_id": self.line_id, 
+          "direction": direction, 
+          "media_time_ms": media_time_ms,
+        }
     self._set_track(track_id, direction, point, media_time_ms)
         
   def forget(self, track_id: int) -> None:
     if track_id < 0:
       raise ValueError("input a valid `track_id`!")
     
-    if track_id > len(self._tracks):
-      raise ValueError('Out of Range `track_id`')
+    if track_id not in self._tracks:
+      raise ValueError('`track_id` does not exist')
 
     if type(track_id) != int:
       raise TypeError('`track_id` needs to be an integer')
     
-    del self._tracks[track_id]
+    self._tracks.pop(track_id, None)
     self._counted.discard(track_id)
 
   def _compute_label(self, dist: float) -> str:
