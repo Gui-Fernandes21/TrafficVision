@@ -56,11 +56,7 @@ class LineCounter:
     direction = self._compute_label(dist)
 
     if track is None:
-      self._tracks[track_id] = {
-        "side": direction,
-        "last_seen_point": point,
-        "last_seen_ms": media_time_ms,
-      }
+      self._set_track(track_id, direction, point, media_time_ms)
       return
 
     # -------------------------------------------------------------------------
@@ -70,12 +66,7 @@ class LineCounter:
     
     if time_gap > self.max_gap_ms:
       del self._tracks[track_id]
-      
-      self._tracks[track_id] = {
-        "side": direction,
-        "last_seen_point": point,
-        "last_seen_ms": media_time_ms,
-      }
+      self._set_track(track_id, direction, point, media_time_ms)
       return
 
     # -------------------------------------------------------------------------
@@ -88,16 +79,10 @@ class LineCounter:
     # -------------------------------------------------------------------------
     # check for collision and track is outside of the deadband
     # -------------------------------------------------------------------------
-    print(track['side'],track['last_seen_point'], dist)
     if is_outside_band:
       # If there's no side, that means that the track was 'born' inside the deadband
-      if track["side"] == None:
-        self._tracks[track_id] = {
-          "side": direction,
-          "last_seen_point": point,
-          "last_seen_ms": media_time_ms,
-        }
-        return
+      if track["side"] is None:
+        return self._set_track(track_id, direction, point, media_time_ms)
       
       # Check if the side has changed since the last stable side
       # Check if track has not already been counted for this line
@@ -106,11 +91,7 @@ class LineCounter:
         
         if intersect:
           self._counted.add(track_id) 
-          self._tracks[track_id] = { 
-            "side": direction, 
-            "last_seen_point": point,  
-            "last_seen_ms": media_time_ms, 
-          }
+          self._set_track(track_id, direction, point, media_time_ms)
           
           return {
             "track_id": track_id, 
@@ -118,8 +99,7 @@ class LineCounter:
             "direction": direction, 
             "media_time_ms": media_time_ms,
           }
-    track['side'] = direction
-    track['last_seen_point'] = point
+    self._set_track(track_id, direction, point, media_time_ms)
         
   def forget(self, track_id: int) -> None:
     if track_id < 0:
@@ -143,3 +123,10 @@ class LineCounter:
       label = self.positive_label
 
     return label
+  
+  def _set_track(self, track_id: int, side: str, point: list, t: int):
+    self._tracks[track_id] = { 
+            "side": side, 
+            "last_seen_point": point,  
+            "last_seen_ms": t, 
+          }
